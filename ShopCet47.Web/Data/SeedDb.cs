@@ -1,4 +1,5 @@
-﻿using ShopCet47.Web.Data.Entities;
+﻿using Microsoft.AspNetCore.Identity;
+using ShopCet47.Web.Data.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,42 +9,61 @@ namespace ShopCet47.Web.Data
 {
     public class SeedDb
     {
-        private readonly DataContext context;
-        private Random random;
+        private readonly DataContext _context; 
+        private readonly UserManager<User> _userManager; 
+        private Random _random;
 
-        public SeedDb(DataContext context)
+        public SeedDb(DataContext context, UserManager<User> userManager)
         {
 
-         this.context = context;
-            this.random = new Random();
+            _context = context;
+            _random = new Random();
+            _userManager = userManager;
         }
 
+        public UserManager<User> UserManager { get; }
 
         public async Task SeedAsync()
         {
-            await this.context.Database.EnsureCreatedAsync();
+            await _context.Database.EnsureCreatedAsync();
 
-            if (!this.context.Products.Any())
+            var user = await _userManager.FindByEmailAsync("rafael.santos@cinel.pt"); 
+            if (user == null) 
+            { 
+                user = new User 
+                {   
+                    FirstName = "Rafael", 
+                    LastName = "Santos", 
+                    Email = "rafael.santos@cinel.pt", 
+                    UserName = "rafael.santos@cinel.pt", 
+                }; 
 
-            {
-                this.AddProduct("First Product");
-                this.AddProduct("Second Product");
-                this.AddProduct("Third Product");
-                await this.context.SaveChangesAsync();
+                var result = await _userManager.CreateAsync(user, "123456"); 
+                if (result != IdentityResult.Success) 
+                { 
+                    throw new InvalidOperationException("Could not create the user in seeder"); 
+                }
+            }
 
+            if (!_context.Products.Any()) 
+            { 
+                this.AddProduct("First Product", user); 
+                this.AddProduct("Second Product", user); 
+                this.AddProduct("Third Product", user); 
+                await _context.SaveChangesAsync(); 
             }
         }
+ 
 
-
-        private void AddProduct(string name)
+        private void AddProduct(string name, User user)
         {
-            this.context.Products.Add(new Product
+            _context.Products.Add(new Product
 
             {
                 Name = name,
-                Price = this.random.Next(100),
+                Price = _random.Next(100),
                 IsAvailabe = true,
-                Stock = this.random.Next(100)
+                Stock = _random.Next(100)
             });
         }
     }
