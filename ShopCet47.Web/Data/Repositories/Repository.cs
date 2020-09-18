@@ -7,6 +7,9 @@ using ShopCet47.Web.Data.Entities;
 
 namespace ShopCet47.Web.Data.Repositories
 {
+
+    // Sem utilização (o primeiro feito)
+
     public class Repository : IRepository
     {
         private readonly DataContext _context;
