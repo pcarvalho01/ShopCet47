@@ -19,6 +19,7 @@ namespace ShopCet47.Web.Controllers
         private readonly IProductRepository _productRepository;
         private readonly IUserHelper _userHelper;
 
+
         public ProductsController(IProductRepository productRepository, IUserHelper userHelper)
         {
             _productRepository = productRepository;
@@ -60,7 +61,7 @@ namespace ShopCet47.Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Price,ImageFile,LastPurchase,LastSale,IsAvailabe,Stock")] ProductViewModel view)
+        public async Task<IActionResult> Create(ProductViewModel view)
         {
             if (ModelState.IsValid)
             {
@@ -151,7 +152,7 @@ namespace ShopCet47.Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Price,ImageFile,LastPurchase,LastSale,IsAvailabe,Stock")] ProductViewModel view)
+        public async Task<IActionResult> Edit(int id, ProductViewModel view)
         {
            
             if (ModelState.IsValid)
