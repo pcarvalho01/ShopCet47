@@ -89,9 +89,8 @@ namespace ShopCet47.Web.Controllers
                 }
 
                 var product = this.ToProduct(view, path);
-
-                //TODO: Mudar para o user que depois tiver logado
-                product.User = await _userHelper.GetUserByEmailAsync("paulo.carvalho@cinel.pt");
+               
+                product.User = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
                 await _productRepository.CreateAsync(product);
                 return RedirectToAction(nameof(Index));
             }
@@ -185,8 +184,7 @@ namespace ShopCet47.Web.Controllers
 
                     var product = this.ToProduct(view, path);
 
-                    //TODO: Mudar para o user que depois tiver logado
-                    product.User = await _userHelper.GetUserByEmailAsync("paulo.carvalho@cinel.pt");
+                    product.User = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
                     await _productRepository.UpdateAsync(product);
                   
                 }
