@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +15,7 @@ using ShopCet47.Web.Models;
 
 namespace ShopCet47.Web.Controllers
 {
+    
     public class ProductsController : Controller
     {
         private readonly IProductRepository _productRepository;
@@ -50,6 +52,7 @@ namespace ShopCet47.Web.Controllers
             return View(product);
         }
 
+        [Authorize]
         // GET: Products/Create
         public IActionResult Create()
         {
@@ -88,7 +91,7 @@ namespace ShopCet47.Web.Controllers
                 var product = this.ToProduct(view, path);
 
                 //TODO: Mudar para o user que depois tiver logado
-                product.User = await _userHelper.GetUserByEmailAsync("rafael.santos@cinel.pt");
+                product.User = await _userHelper.GetUserByEmailAsync("paulo.carvalho@cinel.pt");
                 await _productRepository.CreateAsync(product);
                 return RedirectToAction(nameof(Index));
             }
@@ -113,6 +116,7 @@ namespace ShopCet47.Web.Controllers
         }
 
         // GET: Products/Edit/5
+        [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -182,7 +186,7 @@ namespace ShopCet47.Web.Controllers
                     var product = this.ToProduct(view, path);
 
                     //TODO: Mudar para o user que depois tiver logado
-                    product.User = await _userHelper.GetUserByEmailAsync("rafael.santos@cinel.pt");
+                    product.User = await _userHelper.GetUserByEmailAsync("paulo.carvalho@cinel.pt");
                     await _productRepository.UpdateAsync(product);
                   
                 }
@@ -203,6 +207,7 @@ namespace ShopCet47.Web.Controllers
         }
 
         // GET: Products/Delete/5
+        [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
