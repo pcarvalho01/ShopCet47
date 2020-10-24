@@ -1,21 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using ShopCet47.Web.Data;
-using ShopCet47.Web.Data.Entities;
-using ShopCet47.Web.Data.Repositories;
-using ShopCet47.Web.Helpers;
-using ShopCet47.Web.Models;
+﻿
 
 namespace ShopCet47.Web.Controllers
 {
-    
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.EntityFrameworkCore;
+    using Data.Entities;
+    using Data.Repositories;
+    using Helpers;
+    using Models;
+    using System;
+    using System.IO;
+    using System.Threading.Tasks;
+
+
     public class ProductsController : Controller
     {
         private readonly IProductRepository _productRepository;
@@ -43,7 +41,7 @@ namespace ShopCet47.Web.Controllers
             }
 
             var product = await _productRepository.GetByIdAsync(id.Value);
-               
+
             if (product == null)
             {
                 return NotFound();
@@ -52,8 +50,8 @@ namespace ShopCet47.Web.Controllers
             return View(product);
         }
 
-        [Authorize]
         // GET: Products/Create
+        [Authorize(Roles="Admin")]
         public IActionResult Create()
         {
             return View();
@@ -70,7 +68,7 @@ namespace ShopCet47.Web.Controllers
             {
                 var path = string.Empty;
 
-                if(view.ImageFile != null && view.ImageFile.Length > 0)
+                if (view.ImageFile != null && view.ImageFile.Length > 0)
                 {
                     var guid = Guid.NewGuid().ToString();
                     var file = $"{guid}.jpg";
@@ -80,7 +78,7 @@ namespace ShopCet47.Web.Controllers
                         "wwwroot\\images\\Products",
                         file);
 
-                    using(var stream = new FileStream(path, FileMode.Create))
+                    using (var stream = new FileStream(path, FileMode.Create))
                     {
                         await view.ImageFile.CopyToAsync(stream);
                     }
@@ -89,7 +87,7 @@ namespace ShopCet47.Web.Controllers
                 }
 
                 var product = this.ToProduct(view, path);
-               
+
                 product.User = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
                 await _productRepository.CreateAsync(product);
                 return RedirectToAction(nameof(Index));
@@ -115,7 +113,7 @@ namespace ShopCet47.Web.Controllers
         }
 
         // GET: Products/Edit/5
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -157,7 +155,7 @@ namespace ShopCet47.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, ProductViewModel view)
         {
-           
+
             if (ModelState.IsValid)
             {
                 try
@@ -186,11 +184,11 @@ namespace ShopCet47.Web.Controllers
 
                     product.User = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
                     await _productRepository.UpdateAsync(product);
-                  
+
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (! await _productRepository.ExistAsync(view.Id))
+                    if (!await _productRepository.ExistAsync(view.Id))
                     {
                         return NotFound();
                     }
@@ -205,7 +203,7 @@ namespace ShopCet47.Web.Controllers
         }
 
         // GET: Products/Delete/5
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -213,7 +211,7 @@ namespace ShopCet47.Web.Controllers
                 return NotFound();
             }
 
-            var product = await _productRepository.GetByIdAsync(id.Value);             
+            var product = await _productRepository.GetByIdAsync(id.Value);
             if (product == null)
             {
                 return NotFound();
@@ -228,7 +226,7 @@ namespace ShopCet47.Web.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var product = await _productRepository.GetByIdAsync(id);
-            await _productRepository.DeleteAsync(product);        
+            await _productRepository.DeleteAsync(product);
             return RedirectToAction(nameof(Index));
         }
 
