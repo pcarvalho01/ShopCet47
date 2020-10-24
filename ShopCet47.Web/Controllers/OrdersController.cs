@@ -20,5 +20,11 @@ namespace ShopCet47.Web.Controllers
             var model = await _orderRepository.GetOrdersAsync(this.User.Identity.Name);
             return View(model);
         }
+
+        public async Task<IActionResult> Create()
+        {
+            var model = await _orderRepository.GetDetailTempsAsync(this.User.Identity.Name);
+            return View(model);
+        }
     }
 }

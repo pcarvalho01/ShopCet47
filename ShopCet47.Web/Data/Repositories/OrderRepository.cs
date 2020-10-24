@@ -20,6 +20,22 @@ namespace ShopCet47.Web.Data.Repositories
             _userHelper = userHelper;
         }
 
+
+        public async Task<IQueryable<OrderDetailTemp>> GetDetailTempsAsync(string username)
+        {
+            var user = await _userHelper.GetUserByEmailAsync(username);
+            if (user == null)
+            {
+                return null;
+            }
+ 
+            return _context.OrderDetailTemps
+            .Include(o => o.Product)
+            .Where(o => o.User == user)
+            .OrderBy(o => o.Product.Name);
+        }
+
+
         public async Task<IQueryable<Order>> GetOrdersAsync(string username)
         {
             var user = await _userHelper.GetUserByEmailAsync(username);
